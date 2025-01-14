@@ -1,0 +1,21 @@
+{
+  "files": ["types.d.ts", "session.d.ts"],
+  "compilerOptions": {
+    "target": "ESNext",
+    /* Modules */
+    "module": "NodeNext",
+    "rootDir": "./src/",
+    "moduleResolution": "NodeNext",
+    "outDir": "./build/",
+    "noEmitOnError": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    /* Type Checking */
+    "strict": false,
+    "skipLibCheck": true,
+
+    "baseUrl": "./",
+    "typeRoots": ["./node_modules/@types", "./src/*.d.ts"]
+  },
+  "include": ["src/**/*", "*.d.ts"]
+}

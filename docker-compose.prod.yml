@@ -1,0 +1,11 @@
+services:
+  app:
+    container_name: socialMedia-api-container
+    build:
+      context: .
+      target: production
+    env_file: ./.env
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production

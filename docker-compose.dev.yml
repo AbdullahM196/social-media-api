@@ -1,0 +1,47 @@
+services:
+  app:
+    container_name: socialMedia-api-container
+    build:
+      context: .
+      target: development
+    env_file: ./.env
+    volumes:
+      - ./src:/app/api/src:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/socialMedia
+      - redirectUrl=http://localhost:3000/oauth
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    command: npm run dev
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_db:/data/db
+    networks:
+      - app-network
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  mongo_db:
