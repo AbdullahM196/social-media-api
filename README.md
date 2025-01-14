@@ -1,6 +1,3 @@
-Here’s a polished and detailed description for your GitHub repository:
-
----
 
 # Social-Media-API
 
