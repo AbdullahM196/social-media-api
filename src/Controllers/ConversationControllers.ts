@@ -151,7 +151,6 @@ class ConversationController implements IConversationController {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { conversationId, text } = req.body;
-    console.log({ conversationId, text });
     const img = req.file;
     const saveImg = {
       name: "",

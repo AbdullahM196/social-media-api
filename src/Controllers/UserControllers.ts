@@ -294,11 +294,7 @@ class UserControllers implements IUserController {
       { _id: userSession.user?._id },
       { $set: { token: "" } }
     );
-    req.session.destroy((err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    req.session.destroy();
     res.clearCookie("connect.sid");
     return res.sendStatus(204);
   }

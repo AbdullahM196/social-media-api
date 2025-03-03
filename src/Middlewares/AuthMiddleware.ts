@@ -17,7 +17,6 @@ class AuthMiddleWare {
   async authenticateUsers(req: Request, res: Response, next: NextFunction) {
     const token = req.session.token;
     if (!token) {
-      console.log("unAuthorized Missing token");
       return res.status(401).json({ message: "unAuthorized Missing token" });
     }
     try {
@@ -25,12 +24,10 @@ class AuthMiddleWare {
         username: string;
       };
       if (!decoded) {
-        console.log("unAuthorized Invalid token");
         return res.status(401).json({ message: "unAuthorized Invalid token" });
       }
       next();
     } catch (error) {
-      console.log({ authError: error });
       return res.status(401).json({ message: error });
     }
   }

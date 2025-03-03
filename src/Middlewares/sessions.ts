@@ -8,7 +8,6 @@ const store = new MongoStore({
   uri: process.env.MONGODB_URI,
   collection: "sessions",
 });
-console.log({sessionSecret:process.env.SESSION_SECRET!})
 export default session({
   secret: process.env.SESSION_SECRET!,
   saveUninitialized: false,

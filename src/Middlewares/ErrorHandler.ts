@@ -28,9 +28,7 @@ class ErrorHandler {
     let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     let message = error.message;
     let errorDetails: any = {};
-    console.log("#".repeat(50));
-    console.log(error);
-    console.log("#".repeat(50));
+   
 
     if (error.name === "ValidationError") {
       message = "Validation Error";
