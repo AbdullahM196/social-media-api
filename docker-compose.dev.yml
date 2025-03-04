@@ -11,8 +11,6 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongodb:27017/socialMedia
-      - redirectUrl=http://localhost:3000/oauth
     depends_on:
       - mongo
     networks:
