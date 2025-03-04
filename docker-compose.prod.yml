@@ -1,7 +1,7 @@
 services:
   app:
     container_name: socialMedia-api-container
-    image: abdullahm196/social-media-api:tagname
+    image: abdullahm196/social-media-api
     build:
       context: .
       target: production
