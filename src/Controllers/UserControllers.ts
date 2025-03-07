@@ -277,7 +277,7 @@ class UserControllers implements IUserController {
     } catch (error) {
       next(error);
     } finally {
-      res.redirect(303, "http://localhost:5173");
+      res.redirect(process.env.frontendUrl || "http://localhost:5173");
     }
   }
 
