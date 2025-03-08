@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import { config } from "dotenv";
 import DBConnect from "./Config/DBConnect";
 import sessions from "./Middlewares/sessions";
@@ -27,8 +27,8 @@ DBConnect.getInstance().ConnectDB();
 const app: Application = express();
 const port = process.env.PORT || 3000;
 app.use(cors(corsOptions));
-app.use(credentials);
-
+// app.use(credentials);
+app.use(express.json());
 app.use(sessions);
 // Set up Helmet for security headers.
 app.use(helmet());
@@ -39,8 +39,7 @@ app.use(xss());
 
 // prevent http param pollution.
 app.use(hpp());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/oauth", googleAuth);
 app.use("/requestUrl", googleAuthorizeUrl);
 app.use("/user", userRouter);

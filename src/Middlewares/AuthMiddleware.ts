@@ -23,6 +23,7 @@ class AuthMiddleWare {
       const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as {
         username: string;
       };
+      console.log({ decoded });
       if (!decoded) {
         return res.status(401).json({ message: "unAuthorized Invalid token" });
       }

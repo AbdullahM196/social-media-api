@@ -226,6 +226,7 @@ class UserControllers implements IUserController {
     req.session.visited = true;
     req.session.user = findUser;
     req.session.token = token;
+    console.log({ session: req.session });
 
     return res.status(200).json(this.userInfoSentToFrontend(findUser));
   }
@@ -238,6 +239,7 @@ class UserControllers implements IUserController {
     try {
       const code: string = req.query.code!.toString();
       const redirectUrl = process.env.redirectUrl;
+      console.log({ redirectUrl });
       const oauth2client = new OAuth2Client(
         process.env.CLIENT_ID,
         process.env.CLIENT_SECRET,
@@ -275,6 +277,7 @@ class UserControllers implements IUserController {
       }
       req.session.visited = true;
     } catch (error) {
+      console.log({ error });
       next(error);
     } finally {
       res.redirect(process.env.frontendUrl || "http://localhost:5173");
