@@ -27,7 +27,7 @@ DBConnect.getInstance().ConnectDB();
 const app: Application = express();
 const port = process.env.PORT || 3000;
 app.use(cors(corsOptions));
-// app.use(credentials);
+app.use(credentials);
 app.use(express.json());
 app.use(sessions);
 // Set up Helmet for security headers.
