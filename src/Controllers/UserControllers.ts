@@ -110,10 +110,9 @@ class UserControllers implements IUserController {
     const hashedPassword = await bcrypt.hash(password, salt);
     return hashedPassword;
   }
-  async generateToken(username: string, expiresIn: string): Promise<string> {
-    const token = JWT.sign({ username }, process.env.JWT_SECRET!, {
-      expiresIn: expiresIn,
-    });
+  async generateToken(username: string): Promise<string> {
+    const secretKey = process.env.JWT_SECRET as string;
+    const token = JWT.sign({ username }, secretKey, { expiresIn: "7d" });
     return token;
   }
   userInfoSentToFrontend(user: IUser): object {
@@ -182,7 +181,7 @@ class UserControllers implements IUserController {
         .json({ message: "Password can't be username or email" });
     }
     const hashedPassword = await this.hashPassword(password);
-    const token = await this.generateToken(username, "7d");
+    const token = await this.generateToken(username);
     const user = await userModel.create({
       username,
       email,
@@ -191,9 +190,12 @@ class UserControllers implements IUserController {
       token,
     });
     const userAsIUser = user.toObject() as IUser;
-    req.session.visited = true;
-    req.session.user = userAsIUser;
-    req.session.token = token;
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(201).json(this.userInfoSentToFrontend(userAsIUser));
   }
@@ -218,15 +220,17 @@ class UserControllers implements IUserController {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
 
-    const token = await this.generateToken(findUser.username!, "7d");
+    const token = await this.generateToken(findUser.username!);
     await userModel
       .updateOne({ _id: findUser._id }, { $set: { token: token } })
       .exec();
     findUser.token = token;
-    req.session.visited = true;
-    req.session.user = findUser;
-    req.session.token = token;
-    console.log({ session: req.session });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json(this.userInfoSentToFrontend(findUser));
   }
@@ -255,11 +259,9 @@ class UserControllers implements IUserController {
       });
       // login or register by google .
       if (findUser) {
-        const token = await this.generateToken(findUser.username!, "7d");
+        const token = await this.generateToken(findUser.username!);
         await userModel.updateOne({ _id: findUser._id }, { $set: { token } });
         findUser.token = token;
-        req.session.user = findUser;
-        req.session.token = token;
       } else {
         const user = {
           username: data.name,
@@ -268,16 +270,18 @@ class UserControllers implements IUserController {
           token: "",
         };
 
-        const token = await this.generateToken(user.username!, "7d");
+        const token = await this.generateToken(user.username!);
         user.token = token;
         const newUser = new userModel(user);
         await newUser.save();
-        req.session.user = newUser;
-        req.session.token = token;
+        res.cookie("jwt", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
       }
-      req.session.visited = true;
     } catch (error) {
-      console.log({ error });
       next(error);
     } finally {
       res.redirect(process.env.frontendUrl || "http://localhost:5173");
@@ -288,28 +292,30 @@ class UserControllers implements IUserController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const userSession = req.session;
-
-    if (!userSession.token && !userSession.cookie) {
+    const token = req.cookies.jwt;
+    if (!token) {
       return res.sendStatus(204);
     }
-    await userModel.updateOne(
-      { _id: userSession.user?._id },
-      { $set: { token: "" } }
-    );
-    req.session.destroy((err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-    res.clearCookie("connect.sid");
+    const findUser = await userModel.findOne({ token }).exec();
+    if (!findUser) {
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      });
+      return res.sendStatus(204);
+    }
+    findUser.token = "";
+    await findUser.save();
+
+    res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "none" });
     return res.sendStatus(204);
   }
   async getUserProfile(
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user as IUser;
     if (!user) {
       return res.status(401).json({ message: "un Authorized" });
     }
@@ -324,7 +330,7 @@ class UserControllers implements IUserController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user as IUser;
+    const user = req.user as IUser;
     const { email, phone, username } = req.body;
     const img = req.file;
 
@@ -356,7 +362,7 @@ class UserControllers implements IUserController {
       if (duplicateUserName && user.username !== username) {
         return res.status(400).json({ message: "username is already Exists" });
       }
-      req.session.user!.username = username;
+      req.user!.username = username;
       findUser.username = username;
     }
     if (email) {
@@ -368,7 +374,7 @@ class UserControllers implements IUserController {
       if (duplicateEmail && user.email !== email) {
         return res.status(400).json({ message: "Email is already Exists" });
       }
-      (req.session.user as IUser)!.email = email;
+      (req.user as IUser)!.email = email;
       findUser.email = email;
     }
     if (phone) {
@@ -380,7 +386,7 @@ class UserControllers implements IUserController {
       if (duplicatePhone && user.phone !== phone) {
         return res.status(400).json({ message: "Phone is already Exists" });
       }
-      (req.session.user as IUser)!.phone = phone;
+      (req.user as IUser)!.phone = phone;
       findUser.phone = phone;
     }
     if (img) {
@@ -400,7 +406,7 @@ class UserControllers implements IUserController {
         saveImg.url = saveImage.downloadUrl!;
       }
 
-      req.session.user!.img = saveImg;
+      req.user!.img = saveImg;
       findUser.img = saveImg;
     }
 
@@ -408,7 +414,7 @@ class UserControllers implements IUserController {
 
     return res
       .status(201)
-      .json(this.userInfoSentToFrontend(req.session.user! as IUser));
+      .json(this.userInfoSentToFrontend(req.user! as IUser));
   }
   async getUserById(
     req: Request,

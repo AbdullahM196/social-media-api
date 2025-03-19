@@ -78,7 +78,7 @@ class ConversationController implements IConversationController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session?.user;
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "un Authorized" });
     }
@@ -110,7 +110,7 @@ class ConversationController implements IConversationController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -124,7 +124,7 @@ class ConversationController implements IConversationController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     const { conversationId } = req.params;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
@@ -156,7 +156,7 @@ class ConversationController implements IConversationController {
       name: "",
       url: "",
     };
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -202,7 +202,7 @@ class ConversationController implements IConversationController {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { conversationId } = req.params;
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -234,7 +234,7 @@ class ConversationController implements IConversationController {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { messageId } = req.params;
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -263,7 +263,7 @@ class ConversationController implements IConversationController {
   ): Promise<Response> {
     const { messageId } = req.params;
     const { text } = req.body;
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }

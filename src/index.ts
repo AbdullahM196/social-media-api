@@ -1,7 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import { config } from "dotenv";
 import DBConnect from "./Config/DBConnect";
-import sessions from "./Middlewares/sessions";
 import userRouter from "./Routes/userRoute";
 import postsRouter from "./Routes/PostsRoutes";
 import commentRouter from "./Routes/commentRoutes";
@@ -21,15 +20,16 @@ import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import googleAuth from "./Routes/googleAuth";
 import googleAuthorizeUrl from "./Routes/requestUrl";
+import cookieParser from "cookie-parser";
 config();
 DBConnect.getInstance().ConnectDB();
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
-app.use(cors(corsOptions));
 app.use(credentials);
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
-app.use(sessions);
 // Set up Helmet for security headers.
 app.use(helmet());
 // sanitize data

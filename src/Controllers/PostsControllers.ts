@@ -49,7 +49,7 @@ class PostsControllers implements IPostsController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const author = req.session?.user;
+    const author = req?.user;
     if (!author) {
       return res.status(401).json({ message: "Not authorized" });
     }
@@ -83,7 +83,7 @@ class PostsControllers implements IPostsController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session?.user;
+    const user = req?.user;
     if (!user) {
       return res.status(401).json({ message: "Not authorized" });
     }
@@ -142,7 +142,7 @@ class PostsControllers implements IPostsController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     const { postId } = req.params;
 
     if (!postId) {
@@ -196,7 +196,7 @@ class PostsControllers implements IPostsController {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session?.user!;
+    const user = req?.user!;
     req.params.userId = user._id!.toString();
     let page = req.query.page as string;
     const pageNumber = page && !isNaN(parseInt(page)) ? parseInt(page) : 1;
@@ -262,7 +262,7 @@ class PostsControllers implements IPostsController {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { postId } = req.params;
-    const user = req.session.user!;
+    const user = req.user!;
     if (!postId) {
       return res.status(400).json({ message: "You have to sent postId" });
     }

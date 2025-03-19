@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Jwt from "jsonwebtoken";
 import UserControllers from "../Controllers/UserControllers";
+import userModel from "../Models/userModel";
 
 class AuthMiddleWare {
   private static instance: AuthMiddleWare;
@@ -15,7 +16,7 @@ class AuthMiddleWare {
     return AuthMiddleWare.instance;
   }
   async authenticateUsers(req: Request, res: Response, next: NextFunction) {
-    const token = req.session.token;
+    const token = req.cookies?.jwt;
     if (!token) {
       return res.status(401).json({ message: "unAuthorized Missing token" });
     }
@@ -23,10 +24,13 @@ class AuthMiddleWare {
       const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as {
         username: string;
       };
-      console.log({ decoded });
       if (!decoded) {
         return res.status(401).json({ message: "unAuthorized Invalid token" });
       }
+      req.user = await userModel
+        .findOne({ username: decoded.username })
+        .select("-password")
+        .exec();
       next();
     } catch (error) {
       return res.status(401).json({ message: error });

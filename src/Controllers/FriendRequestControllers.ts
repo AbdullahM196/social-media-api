@@ -81,7 +81,7 @@ class FriendRequestController implements IFriendRequestInterface {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res.status(401).json({ message: "You Have To Login First" });
     }
@@ -141,7 +141,7 @@ class FriendRequestController implements IFriendRequestInterface {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session?.user;
+    const user = req?.user;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -164,7 +164,7 @@ class FriendRequestController implements IFriendRequestInterface {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const currentUser = req.session.user!;
+    const currentUser = req.user!;
     const userRequests = await friendRequestsModel
       .find({ sender: currentUser._id })
       .populate("sender", { username: 1, "img.url": 1 })
@@ -176,7 +176,7 @@ class FriendRequestController implements IFriendRequestInterface {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { id } = req.params;
-    const currentUser = req.session.user!;
+    const currentUser = req.user!;
     const findRequest = await friendRequestsModel.findById(id);
     if (!findRequest) {
       return res.status(404).json({ message: "Request not found" });
@@ -191,7 +191,7 @@ class FriendRequestController implements IFriendRequestInterface {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     const { isAccepted, senderId } = req.body;
     if (!user) {
       return res.status(401).json({ message: "you have to login first" });
@@ -269,7 +269,7 @@ class FriendRequestController implements IFriendRequestInterface {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { userId } = req.params;
-    const user = req.session.user!;
+    const user = req.user!;
     if (!user) {
       return res
         .status(401)

@@ -21,7 +21,7 @@ class SavedPostsController implements ISavedPosts {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { postId } = req.params;
-    const user = req.session?.user;
+    const user = req?.user;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
@@ -53,7 +53,7 @@ class SavedPostsController implements ISavedPosts {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session?.user;
+    const user = req?.user;
     if (!user) {
       return res.status(401).json({ message: "you have to login first" });
     }

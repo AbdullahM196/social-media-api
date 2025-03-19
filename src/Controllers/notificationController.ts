@@ -38,7 +38,7 @@ class notificationController implements INotificationControllers {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const user = req.session.user!;
+    const user = req.user!;
     const { receiver, type, text }: notificationRequest = req.body;
     if (!receiver || !text) {
       return res.status(400).json({
@@ -79,7 +79,7 @@ class notificationController implements INotificationControllers {
     req: Request,
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
-    const currentUser = req.session.user!;
+    const currentUser = req.user!;
     const allNotifications = await notificationsModel
       .find({
         receiver: currentUser._id,

@@ -43,7 +43,7 @@ class CommentsControllers implements ICommentControllers {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { postId, content } = req.body;
-    const user = req.session?.user;
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "you have to login first" });
     }
@@ -92,7 +92,7 @@ class CommentsControllers implements ICommentControllers {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { commentId, content } = req.body;
-    const user = req.session?.user;
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "you have to login first" });
     }
@@ -127,7 +127,7 @@ class CommentsControllers implements ICommentControllers {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { commentId } = req.params;
-    const user = req.session?.user;
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "you have to login first" });
     }
@@ -167,7 +167,7 @@ class CommentsControllers implements ICommentControllers {
     res: Response<any, Record<string, any>>
   ): Promise<Response> {
     const { commentId } = req.params;
-    const user = req.session?.user;
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "You have to login first" });
     }
