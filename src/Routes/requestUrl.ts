@@ -5,7 +5,7 @@ const router = Router();
 router.post(
   "/",
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const redirectUrl = "http://localhost:3000/oauth";
+    const redirectUrl = process.env.redirectUrl;
     const oauth2client = new OAuth2Client(
       process.env.CLIENT_ID,
       process.env.CLIENT_SECRET,
