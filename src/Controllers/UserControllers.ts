@@ -243,7 +243,6 @@ class UserControllers implements IUserController {
     try {
       const code: string = req.query.code!.toString();
       const redirectUrl = process.env.redirectUrl;
-      console.log({ redirectUrl });
       const oauth2client = new OAuth2Client(
         process.env.CLIENT_ID,
         process.env.CLIENT_SECRET,
@@ -262,6 +261,12 @@ class UserControllers implements IUserController {
         const token = await this.generateToken(findUser.username!);
         await userModel.updateOne({ _id: findUser._id }, { $set: { token } });
         findUser.token = token;
+        res.cookie("jwt", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
       } else {
         const user = {
           username: data.name,

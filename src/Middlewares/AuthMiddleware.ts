@@ -20,6 +20,7 @@ class AuthMiddleWare {
     if (!token) {
       return res.status(401).json({ message: "unAuthorized Missing token" });
     }
+    console.log({ token });
     try {
       const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as {
         username: string;
@@ -27,10 +28,12 @@ class AuthMiddleWare {
       if (!decoded) {
         return res.status(401).json({ message: "unAuthorized Invalid token" });
       }
+      console.log({ decoded });
       req.user = await userModel
         .findOne({ username: decoded.username })
         .select("-password")
         .exec();
+      console.log({ user: req.user });
       next();
     } catch (error) {
       return res.status(401).json({ message: error });

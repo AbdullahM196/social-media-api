@@ -16,7 +16,6 @@ router.post(
       scope: "https://www.googleapis.com/auth/userinfo.profile openid",
       prompt: "consent",
     });
-    console.log({ authorizeUrl });
     res.json({ url: authorizeUrl });
   })
 );
